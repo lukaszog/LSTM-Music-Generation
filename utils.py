@@ -10,7 +10,6 @@ import numpy
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, TensorBoard
 from keras.models import model_from_json
 from keras.utils import np_utils
-from music21 import converter, instrument, note, chord
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 

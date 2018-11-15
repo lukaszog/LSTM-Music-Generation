@@ -69,7 +69,7 @@ model.add(Dropout(0.3))
 model.add(LSTM(64, return_sequences=False))
 model.add(Dropout(0.3))
 model.add(Dense(1))
-model.add(Activation('softmax'))
+model.add(Activation('relu'))
 #
 # model.summary()
 model.summary()
@@ -81,8 +81,8 @@ history = model.fit(X, y,
                     # validation_data=(X_test, y_test),
                     callbacks=callbacks_list,
                     validation_split=0.33,
-                    epochs=1,
-                    batch_size=64,
+                    epochs=100,
+                    batch_size=1,
                     verbose=1,
                     )
 

@@ -7,3 +7,5 @@
 *.iml
 out
 gen
+__pycache__
+results/04/logs/
