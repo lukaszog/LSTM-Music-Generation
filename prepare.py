@@ -8,7 +8,7 @@ from sklearn.preprocessing import MinMaxScaler
 import utils
 
 # notes = []
-# for file in glob.glob("chopin/*.mid"):
+# for file in glob.glob("../midi/preludes/*.mid"):
 #     print("Parsing %s" % file)
 #     midi = converter.parse(file)
 #     notes_to_parse = None
@@ -21,24 +21,19 @@ import utils
 #     for element in notes_to_parse:
 #         if isinstance(element, note.Note):
 #             notes.append(str(element.pitch))
-#             print(str(element.pitch))
 #         elif isinstance(element, chord.Chord):
 #             notes.append('.'.join(str(n) for n in element.pitches))
 #             # print(type(element))
-#             print('.'.join(str(n) for n in element.pitches))
+#             # print('.'.join(str(n) for n in element.pitches))
 #
-#     with open('./all_chopin', 'wb') as filepath:
+#     with open('./preludia', 'wb') as filepath:
 #         pickle.dump(notes, filepath)
-#
-# exit()
 data = pickle.load(open("notes_tbt_classical", "rb"))
 
-# print(data[0:10])
-# exit()
 
 notes = []
-NUM_BITS = 98
-keyboard = bitarray(NUM_BITS)
+NUM_BITS = 88
+keyboard = bitarray(32)
 keyboard.setall(0)
 
 error = 0
@@ -48,21 +43,23 @@ for n in data:
     # print(nb)
     octave = ""
     for m in nb:
-        # try:
+        try:
             # print(m)
-        print(m)
-        f = note.Note(m)
-        octave = int(f.octave if f.octave else 4)
-        mantise = int("0x" + f.pitch.pitchClassString, 0)
-        keyboard[mantise + 12 * octave] = 1
-            # keyboard[12 + octave - 1] = 1
-        # except pitch.PitchException:
-        #     error += 1
+            f = note.Note(m)
+            mantise = int("0x" + f.pitch.pitchClassString, 0)
+            keyboard[mantise] = 1
+            if f.octave is None:
+                octave = 4
+            else:
+                octave = f.octave
+            keyboard[12 + octave - 1] = 1
+        except pitch.PitchException:
+            error += 1
 
     # print(octave)
-    print(keyboard)
+    # print(int(keyboard.to01(), 2))
     notes.append(str(int(keyboard.to01(), 2)))
-    keyboard = bitarray(NUM_BITS)
+    keyboard = bitarray(32)
     keyboard.setall(0)
 
 keyboard = int(keyboard.to01(), 2)
@@ -81,10 +78,12 @@ note_data = note_data.reshape(len(note_data), 1)
 
 print(note_data)
 
-scaler = MinMaxScaler(feature_range=(0, 1))
-note_data = scaler.fit_transform(note_data)
-print(note_data)
 
-pickle.dump(note_data, open("all_chopin_data", "wb"))
-print('Error: ', error)
+
+note_data = np.array(note_data, dtype=np.int64)
+print(note_data[0:100])
+
+
+pickle.dump(note_data, open("notes_tbt_classical.n", "wb"))
+
 

@@ -20,17 +20,22 @@ import os
 import utils
 import matplotlib.pyplot as plt
 
-SEQ_LEN = 10
+SEQ_LEN = 100
 
 results = utils.create_results_dir()
 
-data = pickle.load(open("tbt_classical_data", "rb"))
+data = pickle.load(open("notes_tbt_classical.n", "rb"))
+
+scaler = MinMaxScaler(feature_range=(0, 1))
+data = scaler.fit_transform(np.array(data))
 
 input_data, output_data = utils.prepare_seq(data, SEQ_LEN)
 
 X = np.array(input_data)
 X = X.reshape((X.shape[0], 1, X.shape[1]))
 y = np.array(output_data).reshape((len(output_data), 1))
+
+print(X[0:100])
 
 print(X.shape)
 print(X)
@@ -47,7 +52,7 @@ model.add(Dropout(0.3))
 model.add(LSTM(256, return_sequences=False))
 model.add(Dropout(0.3))
 model.add(Dense(1))
-model.add(Activation('relu'))
+model.add(Activation('softmax'))
 model.summary()
 model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
 
