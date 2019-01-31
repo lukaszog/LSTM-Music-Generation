@@ -45,9 +45,12 @@ y = np.array(output_data).reshape((len(output_data), 1))
 
 model = Sequential()
 model.add(LSTM(
-    4,
+    64,
     input_shape=(X.shape[1], SEQ_LEN),
+    return_sequences=True
 ))
+model.add(Dropout(0.3))
+model.add(LSTM(64, return_sequences=False))
 model.add(Dense(1))
 model.summary()
 model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
@@ -57,9 +60,10 @@ callbacks_list = utils.model_callbacks(results)
 utils.save_model_to_json(model, results)
 utils.logging('Model saved to file: {}/{}'.format(results, 'model.json'))
 history = model.fit(X, y,
+                    callbacks=callbacks_list,
                     validation_split=0.33,
                     epochs=50,
-                    batch_size=1,
+                    batch_size=64,
                     verbose=1,
                     )
 

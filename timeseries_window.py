@@ -11,6 +11,15 @@ from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import MinMaxScaler
 
 
+year=1960
+month=1
+
+for i in range(0, 20):
+    print('Miesiac', month)
+    month+=1%12
+    year+=1
+
+
 # convert an array of values into a dataset matrix
 def create_dataset(dataset, look_back=1):
     dataX, dataY = [], []
@@ -27,6 +36,8 @@ numpy.random.seed(7)
 dataframe = read_csv('international-airline-passengers.csv', usecols=[1], engine='python', skipfooter=3)
 dataset = dataframe.values
 dataset = dataset.astype('float32')
+print(dataset[0:5])
+exit()
 # normalize the dataset
 scaler = MinMaxScaler(feature_range=(0, 1))
 dataset = scaler.fit_transform(dataset)
@@ -37,8 +48,6 @@ train, test = dataset[0:train_size, :], dataset[train_size:len(dataset), :]
 # reshape into X=t and Y=t+1
 look_back = 3
 trainX, trainY = create_dataset(train, look_back)
-
-
 
 
 testX, testY = create_dataset(test, look_back)
@@ -54,6 +63,10 @@ model.compile(loss='mean_squared_error', optimizer='adam')
 print(trainX[0:6])
 model.fit(trainX, trainY, epochs=10, batch_size=1, verbose=2)
 # make predictions
+
+print(trainX[0:10])
+exit()
+
 trainPredict = model.predict(trainX)
 testPredict = model.predict(testX)
 # invert predictions

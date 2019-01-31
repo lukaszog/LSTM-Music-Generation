@@ -6,9 +6,12 @@ import pickle
 import glob
 from sklearn.preprocessing import MinMaxScaler
 import utils
+import matplotlib.pyplot as plt
+from collections import Counter
+from music21 import corpus
 
-# notes = []
-# for file in glob.glob("../midi/preludes/*.mid"):
+notes = []
+# for file in glob.glob("ballada/*.mid"):
 #     print("Parsing %s" % file)
 #     midi = converter.parse(file)
 #     notes_to_parse = None
@@ -25,18 +28,28 @@ import utils
 #             notes.append('.'.join(str(n) for n in element.pitches))
 #             # print(type(element))
 #             # print('.'.join(str(n) for n in element.pitches))
-#
-#     with open('./preludia', 'wb') as filepath:
-#         pickle.dump(notes, filepath)
-data = pickle.load(open("notes_tbt_classical", "rb"))
 
+
+# pickle.dump(notes, open("ballada.notes", "wb"))
+data = pickle.load(open("all_chopin", "rb"))
+
+print(Counter(data))
+# s = converter.parse('ballada/ballade3.mid')
+# s.plot('histogram', 'pitch')
+
+# exit()
+# data = ['A2.F2.D2', 'F4', 'E.G']
 
 notes = []
-NUM_BITS = 88
-keyboard = bitarray(32)
+NUM_BITS = 89
+keyboard = bitarray(NUM_BITS)
 keyboard.setall(0)
 
 error = 0
+
+print(len(data))
+
+
 
 for n in data:
     nb = n.split('.')
@@ -47,43 +60,51 @@ for n in data:
             # print(m)
             f = note.Note(m)
             mantise = int("0x" + f.pitch.pitchClassString, 0)
-            keyboard[mantise] = 1
-            if f.octave is None:
-                octave = 4
-            else:
-                octave = f.octave
-            keyboard[12 + octave - 1] = 1
+            octave = int(f.octave if f.octave else 4)
+            mantise = int("0x" + f.pitch.pitchClassString, 0)
+            number = mantise + 12 * octave - 1
+            keyboard[number] = 1
+            # if f.octave is None:
+            #     octave = 4
+            # else:
+            #     octave = f.octave
+            # keyboard[12 + octave - 1] = 1
         except pitch.PitchException:
             error += 1
 
-    # print(octave)
-    # print(int(keyboard.to01(), 2))
+    print(octave)
+    print(keyboard)
+    print("Int: ", int(keyboard.to01(), 2))
     notes.append(str(int(keyboard.to01(), 2)))
-    keyboard = bitarray(32)
+    keyboard = bitarray(NUM_BITS)
     keyboard.setall(0)
 
 keyboard = int(keyboard.to01(), 2)
-
+# exit()
 print(notes)
-
 note_data = []
 
 for k in notes:
-    note_data.append(''.join(str(x) for x in k))
+    note_data.append(int(''.join(str(x) for x in k)))
 
 print(note_data)
 
 note_data = np.array(note_data)
+print(Counter(note_data))
+
+# fig_per_hour = plt.figure()
+# per_hour = fig_per_hour.add_subplot(111)
+# counts, bins, patches = per_hour.hist(
+#     note_data, bins = 100, normed = False, color = 'g',linewidth=0)
+# plt.gca().set_xlim(note_data.min(), note_data.max())
+# plt.show()
+
 note_data = note_data.reshape(len(note_data), 1)
 
 print(note_data)
 
-
-
 note_data = np.array(note_data, dtype=np.int64)
-print(note_data[0:100])
-exit()
 
-pickle.dump(note_data, open("notes_tbt_classical.n", "wb"))
+pickle.dump(note_data, open("chopin88bits.binary", "wb"))
 
 

@@ -19,12 +19,13 @@ from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, TensorBoard
 import os
 import utils
 import matplotlib.pyplot as plt
+from keras import regularizers
 
-SEQ_LEN = 100
+SEQ_LEN = 10
 
 results = utils.create_results_dir()
 
-data = pickle.load(open("notes_tbt_classical.n", "rb"))
+data = pickle.load(open("ballada.n", "rb"))
 
 scaler = MinMaxScaler(feature_range=(0, 1))
 data = scaler.fit_transform(np.array(data))
@@ -43,17 +44,15 @@ print(y)
 
 model = Sequential()
 model.add(LSTM(
-    256,
+    64,
     input_shape=(X.shape[1], SEQ_LEN),
-    return_sequences=True
+    return_sequences=False, kernel_regularizer=regularizers.l2(0.01),
+                activity_regularizer=regularizers.l1(0.01)
 ))
 model.add(Dropout(0.3))
-model.add(LSTM(256, return_sequences=False))
-model.add(Dropout(0.3))
 model.add(Dense(1))
-model.add(Activation('softmax'))
 model.summary()
-model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='mean_squared_error', optimizer='sgd', metrics=['accuracy'])
 
 callbacks_list = utils.model_callbacks(results)
 
