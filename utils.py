@@ -75,13 +75,13 @@ def model_callbacks(results):
         mode='min'
     ))
 
-    callbacks_list.append(TensorBoard(
-        log_dir=os.path.join(results, 'logs'),
-        write_graph=False,
-        write_images=False,
-        histogram_freq=1,
-        write_grads=1
-    ))
+    # callbacks_list.append(TensorBoard(
+    #     log_dir=os.path.join(results, 'logs'),
+    #     write_graph=False,
+    #     write_images=False,
+    #     histogram_freq=1,
+    #     write_grads=1
+    # ))
 
     callbacks_list.append(ReduceLROnPlateau(
         monitor='val_loss',
