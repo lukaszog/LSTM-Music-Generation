@@ -3,14 +3,15 @@ import numpy as np
 from bitarray import bitarray
 # import re
 import pickle
-import glob
-from sklearn.preprocessing import MinMaxScaler
-import utils
-import matplotlib.pyplot as plt
+# import glob
+# from sklearn.preprocessing import MinMaxScaler
+# import utils
+# import matplotlib.pyplot as plt
 from collections import Counter
 from music21 import corpus
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import LabelEncoder
 
-notes = []
 # for file in glob.glob("ballada/*.mid"):
 #     print("Parsing %s" % file)
 #     midi = converter.parse(file)
@@ -33,15 +34,22 @@ notes = []
 # pickle.dump(notes, open("ballada.notes", "wb"))
 data = pickle.load(open("all_chopin", "rb"))
 
-print(Counter(data))
+# print(Counter(data))
 # s = converter.parse('ballada/ballade3.mid')
 # s.plot('histogram', 'pitch')
 
 # exit()
-# data = ['A2.F2.D2', 'F4', 'E.G']
+
+octave_numbers = [0, 0, 12, 24, 36, 48, 60, 72, 84, 96]
+
+# data = ['G', 'C', 'C7', 'E.G', 'C', 'C7']
+# encoder = LabelEncoder()
+# print(encoder.fit_transform(data))
+#
+# exit()
 
 notes = []
-NUM_BITS = 89
+NUM_BITS = 88
 keyboard = bitarray(NUM_BITS)
 keyboard.setall(0)
 
@@ -50,20 +58,34 @@ error = 0
 print(len(data))
 
 
+minimum = 44
+maximum = 44
 
 for n in data:
     nb = n.split('.')
     # print(nb)
     octave = ""
+    note_number = 88 * [0]
     for m in nb:
         try:
             # print(m)
             f = note.Note(m)
-            mantise = int("0x" + f.pitch.pitchClassString, 0)
+            # print(f)
             octave = int(f.octave if f.octave else 4)
             mantise = int("0x" + f.pitch.pitchClassString, 0)
-            number = mantise + 12 * octave - 1
+            # print(octave)
+
+            number = octave_numbers[octave] + mantise + 3
+            # print(f)
+            # print("Oktawa, ", octave)
+            # print("Klasa:", mantise)
+            # print("Number: ", number)
+            if number > maximum:
+                maximum = number
+            if number < minimum:
+                minimum = number
             keyboard[number] = 1
+            note_number[number] = 1
             # if f.octave is None:
             #     octave = 4
             # else:
@@ -71,21 +93,45 @@ for n in data:
             # keyboard[12 + octave - 1] = 1
         except pitch.PitchException:
             error += 1
+    # print(note_number)
 
-    print(octave)
-    print(keyboard)
-    print("Int: ", int(keyboard.to01(), 2))
-    notes.append(str(int(keyboard.to01(), 2)))
+
+    # print(octave)
+    # print(type(keyboard.to01()))
+    # print("Int: ", int(keyboard.to01(), 2))
+    notes.append(note_number)
     keyboard = bitarray(NUM_BITS)
     keyboard.setall(0)
 
+
+pickle.dump((notes), open("chopin88bits.vector", "wb"))
+
+
+exit()
+print("Minimum: ", minimum)
+print("Maximum: ", maximum)
+
+for i in notes:
+    print(i)
+    np.array(i, dtype=np.int64)
+
+
+exit()
+
+notes_array = np.array([])
+tmp_array = np.array([])
+
+
 keyboard = int(keyboard.to01(), 2)
-# exit()
 print(notes)
 note_data = []
 
-for k in notes:
-    note_data.append(int(''.join(str(x) for x in k)))
+minimum = 0x0000000000000000000000000000000000000001000000000000000000000000000000000000000000000000
+print((hex(minimum)))
+
+
+exit()
+
 
 print(note_data)
 
@@ -101,9 +147,10 @@ print(Counter(note_data))
 
 note_data = note_data.reshape(len(note_data), 1)
 
-print(note_data)
 
-note_data = np.array(note_data, dtype=np.int64)
+
+# print(note_data)
+# note_data = np.array(note_data, dtype=np.int64)
 
 pickle.dump(note_data, open("chopin88bits.binary", "wb"))
 
