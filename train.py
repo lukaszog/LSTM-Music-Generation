@@ -89,8 +89,9 @@ history = model.fit(X, y,
                     callbacks=callbacks_list,
                     validation_split=0.33,
                     epochs=50,
-                    batch_size=256,
+                    batch_size=64,
                     verbose=1,
+                    shuffle=True
                     )
 
 utils.generate_final_plots(history, results)
