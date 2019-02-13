@@ -1,9 +1,9 @@
-from music21 import note, stream, pitch, converter, instrument, chord
+from music21 import converter, instrument, note, chord, common
 import numpy as np
 from bitarray import bitarray
 # import re
 import pickle
-# import glob
+import glob
 # from sklearn.preprocessing import MinMaxScaler
 # import utils
 # import matplotlib.pyplot as plt
@@ -12,13 +12,38 @@ from music21 import corpus
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import LabelEncoder
 
-# for file in glob.glob("ballada/*.mid"):
-#     print("Parsing %s" % file)
+MIDI_PATH = "TPD/classical"
+notes = []
+
+for file in glob.glob(MIDI_PATH + "/*.mid"):
+    print("Parsing %s" % file)
+    midi = converter.parseFile(file)
+    print("Przeparsowalem ")
+    notes_to_parse = None
+    try:
+        ins = instrument.partitionByInstrument(midi)
+        notes_to_parse = ins.parts[0].recurse()
+    except:
+        notes_to_parse = midi.flat.notes
+
+    for element in notes_to_parse:
+        if isinstance(element, note.Note):
+            notes.append(str(element.pitch))
+        elif isinstance(element, chord.Chord):
+            notes.append('.'.join(str(n) for n in element.pitches))
+            # print(type(element))
+            # print('.'.join(str(n) for n in element.pitches))
+
+
+# def get_notes_parallel(file):
+#     notes = []
 #     midi = converter.parse(file)
+#     print("Parsing %s" % file)
 #     notes_to_parse = None
+#
 #     try:
-#         ins = instrument.partitionByInstrument(midi)
-#         notes_to_parse = ins.parts[0].recurse()
+#         s2 = instrument.partitionByInstrument(midi)
+#         notes_to_parse = s2.parts[0].recurse()
 #     except:
 #         notes_to_parse = midi.flat.notes
 #
@@ -27,18 +52,27 @@ from sklearn.preprocessing import LabelEncoder
 #             notes.append(str(element.pitch))
 #         elif isinstance(element, chord.Chord):
 #             notes.append('.'.join(str(n) for n in element.pitches))
-#             # print(type(element))
-#             # print('.'.join(str(n) for n in element.pitches))
+#
+#     return notes
+#
+# files = []
+#
+# for file in glob.glob(MIDI_PATH + "/*.mid"):
+#     files.append(file)
+#
+# notes = common.runParallel(files, parallelFunction=get_notes_parallel)
+# notes = [item for list in notes for item in list]
 
 
-# pickle.dump(notes, open("ballada.notes", "wb"))
-data = pickle.load(open("all_chopin", "rb"))
 
-# print(Counter(data))
+pickle.dump(notes, open("tpd_classical.notes", "wb"))
+data = pickle.load(open("tpd_classical.notes", "rb"))
+
+print(Counter(data))
 # s = converter.parse('ballada/ballade3.mid')
 # s.plot('histogram', 'pitch')
 
-# exit()
+exit()
 
 octave_numbers = [0, 0, 12, 24, 36, 48, 60, 72, 84, 96]
 
