@@ -1,8 +1,10 @@
 import os
 import logging
 import numpy as np
-import tensorflow as tf    
+import tensorflow as tf
+#irom tensorflow.python.ops import rnn, rnn_cell
 from tensorflow.models.rnn import rnn_cell
+
 from tensorflow.models.rnn import rnn, seq2seq
 
 import nottingham_util
@@ -52,7 +54,7 @@ class Model(object):
                 cell_class = rnn_cell.BasicLSTMCell
             else:
                 raise Exception("Invalid cell type: {}".format(cell_type))
-
+            #cell = tf.nn.rnn_cell.LSTMCell(name='basic_lstm_cell', num_units=hidden_size)
             cell = cell_class(hidden_size, input_size = input_size)
             if training:
                 return rnn_cell.DropoutWrapper(cell, output_keep_prob = dropout_prob)
