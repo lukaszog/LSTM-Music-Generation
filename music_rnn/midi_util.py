@@ -84,7 +84,7 @@ def round_notes(notes, track_ticks, time_step, R=None, O=None):
 
     return sequence
 
-def parse_midi_to_sequence(input_filename, time_step, verbose=False):
+def parse_midi_to_sequence(input_filename, time_step, verbose=True):
     sequence = []
     pattern = midi.read_midifile(input_filename)
 
