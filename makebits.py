@@ -52,9 +52,9 @@ for n in data:
             # print(f)
             try:
                 keyboard[octave-1] = 1
-                print(keyboard)
-                print("{} {}".format(f, f.octave))
-                print(int(keyboard.to01(), 2))
+                # print(keyboard)
+                # print("{} {}".format(f, f.octave))
+                # print(int(keyboard.to01(), 2))
             except IndexError:
                 print("ERROR: ", f)
                 print(octave)
@@ -64,8 +64,11 @@ for n in data:
             # error += 1
             pass
 
-    notes_digits.append(int(keyboard.to01(), 2))
-    notes_binary.append(keyboard.to01())
+    if int(keyboard.to01(), 2) < 150000:
+        notes_digits.append(int(keyboard.to01(), 2))
+        notes_binary.append(keyboard.to01())
+    else:
+        print("Dziwne dane: {}".format(nb))
     # print(keyboard.to01())
     # print(int(keyboard.to01(), 2))
     # notes.append(str(int(keyboard.to01(), 2)))

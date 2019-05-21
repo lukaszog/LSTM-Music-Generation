@@ -21,7 +21,7 @@ import utils
 import matplotlib.pyplot as plt
 from keras import regularizers
 
-SEQ_LEN = 100
+SEQ_LEN = 3
 
 results = utils.create_results_dir()
 
@@ -69,28 +69,36 @@ print(X[2])
 # print(X.shape)
 # print(y.shape)
 
+train_size = int(len(data) * 0.67)
+test_size = len(data) - train_size
+train, test = data[0:train_size,:], data[train_size:len(data),:]
+# reshape into X=t and Y=t+1
+trainX, trainY = utils.prepare_seq(train, SEQ_LEN)
+testX, testY = utils.prepare_seq(test, SEQ_LEN)
+# reshape input to be [samples, time steps, features]
+trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
+testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
+
 model = Sequential()
 model.add(LSTM(
-    256,
+    128,
     input_shape=(1, SEQ_LEN),
-    return_sequences=True,
+    return_sequences=False,
 ))
-model.add(LSTM(128, return_sequences=True))
-model.add(Dropout(0.3))
 model.add(LSTM(64))
-model.add(Dropout(0.3))
+model.add(Dropout(0.1))
 model.add(Dense(1))
-model.add(Activation('sigmoid'))
+# model.add(Activation('relu'))
 model.summary()
-model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
 
 callbacks_list = utils.model_callbacks(results)
 
 utils.save_model_to_json(model, results)
 utils.logging('Model saved to file: {}/{}'.format(results, 'model.json'))
-history = model.fit(X, y,
+history = model.fit(trainX, trainY,
                     callbacks=callbacks_list,
-                    validation_split=0.33,
+                    validation_data=(testX, testY),
                     epochs=50,
                     batch_size=512,
                     verbose=1,
