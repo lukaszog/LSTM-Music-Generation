@@ -8,7 +8,7 @@ from bitarray import bitarray
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Dropout
-from keras.layers import LSTM, Embedding
+from keras.layers import LSTM, Embedding, Bidirectional
 from keras.layers import Activation
 from keras.optimizers import *
 from keras.activations import *
@@ -80,16 +80,15 @@ trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
 testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
 
 model = Sequential()
-model.add(LSTM(
+model.add(Bidirectional(LSTM(
     128,
-    input_shape=(1, SEQ_LEN),
-    return_sequences=False,
-))
-model.add(LSTM(64))
-model.add(Dropout(0.1))
+    input_shape=(SEQ_LEN, 1),
+    return_sequences=False, activation='relu'
+)))
+# model.add(LSTM(64))
+# model.add(Dropout(0.1))
 model.add(Dense(1))
 # model.add(Activation('relu'))
-model.summary()
 model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
 
 callbacks_list = utils.model_callbacks(results)
