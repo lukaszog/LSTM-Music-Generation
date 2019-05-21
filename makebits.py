@@ -1,13 +1,35 @@
 import pickle
-from music21 import converter, instrument, note, chord, common
+from music21 import converter, instrument, note, chord, common, pitch
 from bitarray import bitarray
+from collections import Counter
+import numpy as np
+import matplotlib.pyplot as plt
 
 octave_numbers = [0, 0, 12, 24, 36, 48, 60, 72, 84, 96]
 data = pickle.load(open("dataset/tpd_classical.notes", "rb"))
 
-data = data[0:5]
+# data = data[0:50]
+# print(Counter(data))
 
-keyboard = bitarray(32)
+# labels, values = zip(*Counter(data).items())
+#
+#
+# indexes = np.arange(len(labels))
+# width = 0.5
+#
+# plt.bar(indexes, values, width)
+# plt.xticks(indexes + width * 0.5, labels)
+# plt.show()
+
+# <music21.note.Note C>
+# bitarray('10000000000001000000')
+
+# data = data[0:5]
+# print(data)
+NUM_BITS = 19
+notes_binary = []
+notes_digits = []
+keyboard = bitarray(NUM_BITS)
 keyboard.setall(0)
 for n in data:
     nb = n.split('.')
@@ -17,22 +39,36 @@ for n in data:
         try:
             # print(m)
             f = note.Note(m)
-            # print(f)
-            octave = int(f.octave if f.octave else 4)
             mantise = int("0x" + f.pitch.pitchClassString, 0)
-            print(octave)
-
-            number = octave_numbers[octave] + mantise + 3
             # print(f)
-            # print("Oktawa, ", octave)
-            # print("Klasa:", mantise)
-            print("Number: ", number)
-
+            keyboard[mantise] = 1
             if f.octave is None:
                 octave = 4
             else:
                 octave = f.octave
-            # keyboard[12 + octave - 1] = 1
-        except Exception:
+            # print(octave)
+            # print(f)
+            try:
+                keyboard[12 + octave - 1] = 1
+                print(keyboard)
+                print("{} {}".format(f, f.octave))
+                print(int(keyboard.to01(), 2))
+            except IndexError:
+                print("ERROR: ", f)
+                print(octave)
+            # print(keyboard)
+        except pitch.PitchException:
+            # error += 1
             pass
+
+    notes_digits.append(int(keyboard.to01(), 2))
+    notes_binary.append(keyboard.to01())
+    # print(keyboard.to01())
+    # print(int(keyboard.to01(), 2))
+    # notes.append(str(int(keyboard.to01(), 2)))
+    keyboard = bitarray(NUM_BITS)
+    keyboard.setall(0)
     # print(note_number)
+# print(notes)
+pickle.dump(notes_binary, open("dataset/tpd_classical.bits", "wb"))
+pickle.dump(notes_digits, open("dataset/tpd_classical.digits", "wb"))

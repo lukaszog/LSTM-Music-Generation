@@ -1,0 +1,1 @@
+makebits - create note representation as bits
