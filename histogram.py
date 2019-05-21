@@ -17,7 +17,7 @@ data = np.array(data, dtype=np.int64).astype(np.int64)
 plt.hist(data)
 plt.title('Przed normalizacją')
 plt.show()
-
+exit()
 data = data.reshape(1, -1)
 scaler = MinMaxScaler(feature_range=(0, 1))
 note_data = scaler.fit_transform(data.astype(np.int64))

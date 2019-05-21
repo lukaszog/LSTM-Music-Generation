@@ -31,9 +31,13 @@ print(data.shape)
 print("Rozmiar danych: ", len(data))
 # scaler = MinMaxScaler(feature_range=(0, 1))
 # data = scaler.fit_transform(np.array(data))
-scaler = MinMaxScaler(feature_range=(0, 1))
+scaler = MinMaxScaler(feature_range=(-1, 1))
 data = scaler.fit_transform(data.astype(np.int64).reshape(-1, 1))
-
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(data)
+data = scaler.transform(data)
+print(data[0:10])
 input_data, output_data = utils.prepare_seq(data, SEQ_LEN)
 
 # print(input_data[0:1][0][0])
@@ -48,6 +52,8 @@ print("Shape: ", input_data.shape)
 
 X = input_data
 
+
+# exit()
 
 # X = X.reshape((input_data[0].shape[0], 1, input_data[0].shape[1]))
 # y = np.array(output_data).reshape((len(output_data), 1))
@@ -67,14 +73,14 @@ model = Sequential()
 model.add(LSTM(
     256,
     input_shape=(1, SEQ_LEN),
-    return_sequences=True, kernel_regularizer=regularizers.l2(0.01),
-                activity_regularizer=regularizers.l1(0.01)
+    return_sequences=True,
 ))
 model.add(LSTM(128, return_sequences=True))
 model.add(Dropout(0.3))
 model.add(LSTM(64))
 model.add(Dropout(0.3))
 model.add(Dense(1))
+model.add(Activation('sigmoid'))
 model.summary()
 model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
 
@@ -86,8 +92,9 @@ history = model.fit(X, y,
                     callbacks=callbacks_list,
                     validation_split=0.33,
                     epochs=50,
-                    batch_size=128,
-                    verbose=1
+                    batch_size=512,
+                    verbose=1,
+                    shuffle=True
                     )
 
 utils.generate_final_plots(history, results)

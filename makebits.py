@@ -39,17 +39,19 @@ for n in data:
         try:
             # print(m)
             f = note.Note(m)
+
             mantise = int("0x" + f.pitch.pitchClassString, 0)
             # print(f)
-            keyboard[mantise] = 1
-            if f.octave is None:
+            # 0 0 0 0 0 0 0  0 0 0 0 0 0 0 0 0 0 0 0
+            keyboard[7 + mantise] = 1
+            if f.octave is None or f.octave == 0:
                 octave = 4
             else:
                 octave = f.octave
             # print(octave)
             # print(f)
             try:
-                keyboard[12 + octave - 1] = 1
+                keyboard[octave-1] = 1
                 print(keyboard)
                 print("{} {}".format(f, f.octave))
                 print(int(keyboard.to01(), 2))
@@ -57,6 +59,7 @@ for n in data:
                 print("ERROR: ", f)
                 print(octave)
             # print(keyboard)
+            #exit()
         except pitch.PitchException:
             # error += 1
             pass
