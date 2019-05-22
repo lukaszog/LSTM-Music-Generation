@@ -21,11 +21,11 @@ import utils
 import matplotlib.pyplot as plt
 from keras import regularizers
 
-SEQ_LEN = 3
+SEQ_LEN = 1
 
 results = utils.create_results_dir()
 
-data = pickle.load(open("dataset/folk_music_clean.digits", "rb"))
+data = pickle.load(open("dataset/folk_music_remove_small_values.digis", "rb"))
 data = np.array(data)
 print(data.shape)
 print("Rozmiar danych: ", len(data))

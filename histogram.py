@@ -9,8 +9,8 @@ from scipy import stats
 
 
 data = pickle.load(open("dataset/folk_music.digits", "rb"))
-data_notes = pickle.load(open("dataset/folk_music.notes", "rb"))
-print(Counter(data_notes))
+# data_notes = pickle.load(open("dataset/folk_music.notes", "rb"))
+# print(Counter(data_notes))
 data = np.array(data, dtype=np.int64).astype(np.int64)
 plt.boxplot(data)
 plt.show()
@@ -29,7 +29,7 @@ for r in remove:
 print(Counter(clean_data))
 print(clean_data.shape)
 print(clean_data[0:200])
-print(data_notes[0:5])
+# print(data_notes[0:5])
 # A = Counter(data)
 # for key, cnts in list(A.items()):   # list is important here
 #     if cnts < 100:
@@ -39,6 +39,7 @@ print(data_notes[0:5])
 # print(data_notes[30:50])
 # print(data[0:100])
 # print(Counter(data))
+pickle.dump(clean_data, open("dataset/folk_music_remove_small_values.digis", "wb"))
 
 plt.hist(clean_data[0:200])
 plt.show()
