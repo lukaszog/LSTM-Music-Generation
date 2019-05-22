@@ -28,6 +28,7 @@ for r in remove:
 
 print(Counter(clean_data))
 print(clean_data.shape)
+clean_data = clean_data.reshape(-1, 1)
 print(clean_data[0:200])
 # print(data_notes[0:5])
 # A = Counter(data)
@@ -41,7 +42,7 @@ print(clean_data[0:200])
 # print(Counter(data))
 pickle.dump(clean_data, open("dataset/folk_music_remove_small_values.digis", "wb"))
 
-plt.hist(clean_data[0:200])
+plt.plot(clean_data)
 plt.show()
 
 plt.hist(clean_data)

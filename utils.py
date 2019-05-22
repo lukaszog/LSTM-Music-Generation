@@ -29,6 +29,7 @@ def load_model_from_json(model_dir):
         model.load_weights(checkpoint)
     return model
 
+
 def create_results_dir():
     results = os.listdir('results')
     results = [directory for directory in results if os.path.isdir(os.path.join('results', directory))]
@@ -69,7 +70,7 @@ def model_callbacks(results):
 
     callbacks_list.append(ModelCheckpoint(
         filepath,
-        monitor='val_acc',
+        monitor='loss',
         verbose=1,
         save_best_only=True,
         mode='min'
@@ -130,7 +131,6 @@ def load_data(directory="data/chopin-preludia-obie-rece"):
 
 
 def prepare_seq(notes, sequence_length):
-
     network_input = []
     network_output = []
 
@@ -141,6 +141,22 @@ def prepare_seq(notes, sequence_length):
         network_output.append(sequence_out)
 
     return np.array(network_input), np.array(network_output)
+
+
+def split_sequence(sequence, n_steps):
+    X, y = list(), list()
+    for i in range(len(sequence)):
+        # find the end of this pattern
+        end_ix = i + n_steps
+        # check if we are beyond the sequence
+        if end_ix > len(sequence) - 1:
+            break
+        # gather input and output parts of the pattern
+        seq_x, seq_y = sequence[i:end_ix], sequence[end_ix]
+        X.append(seq_x)
+        y.append(seq_y)
+    return np.array(X), np.array(y)
+
 
 def prepare_sequences(notes, n_vocab, sequence_length=10, train=0):
     pitchnames = sorted(set(item for item in notes))
@@ -208,7 +224,6 @@ def generate_final_plots(history, results_dir):
 
 
 def one_hot_endoing(data):
-
     keyboard = [0 for i in range(91)]
     n = data.split(".")
     for m in n:
