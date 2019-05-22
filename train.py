@@ -21,12 +21,13 @@ import utils
 import matplotlib.pyplot as plt
 from keras import regularizers
 
-SEQ_LEN = 1
+SEQ_LEN = 100
 
 results = utils.create_results_dir()
 
 data = pickle.load(open("dataset/folk_music_remove_small_values.digis", "rb"))
 data = np.array(data)
+data = data[0:10000]
 import random
 # data = []
 # for i in range(0, 900000):
@@ -35,18 +36,15 @@ import random
 # print(data.shape)
 print("Rozmiar danych: ", len(data))
 data = data.reshape(-1, 1)
-scaler = StandardScaler()
-scaler.fit(data)
-data = scaler.transform(data)
-# scaler = MinMaxScaler(feature_range=(0, 1))
-# data = scaler.fit_transform(np.array(data))
-# scaler = MinMaxScaler(feature_range=(0, 1))
-# data = scaler.fit_transform(data.astype(np.int64).reshape(-1, 1))
+# scaler = StandardScaler()
+# scaler.fit(data)
+# data = scaler.transform(data)
+scaler = MinMaxScaler(feature_range=(0, 1))
+data = scaler.fit_transform(data.reshape(-1, 1))
 from sklearn.preprocessing import StandardScaler
 # scaler = StandardScaler()
 # scaler.fit(data)
 # data = scaler.transform(data)
-print(data[0:10])
 input_data, output_data = utils.split_sequence(data, SEQ_LEN)
 
 # print(input_data[0:1][0][0])
@@ -72,10 +70,7 @@ y = output_data
 # (902898, 3, 1)
 # X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
 # y = np.reshape(y, (y.shape[0], 1, y.shape[1]))
-print(X.shape)
-print(X[0])
-print(X[1])
-print(X[2])
+
 
 # print(X.shape)
 # print(y.shape)
@@ -85,32 +80,35 @@ train_size = int(len(data) * 0.67)
 test_size = len(data) - train_size
 train, test = data[0:train_size,:], data[train_size:len(data),:]
 # reshape into X=t and Y=t+1
-trainX, trainY = utils.split_sequence(data, SEQ_LEN)
-testX, testY = utils.split_sequence(data, SEQ_LEN)
+trainX, trainY = utils.prepare_seq(data, SEQ_LEN)
+testX, testY = utils.prepare_seq(data, SEQ_LEN)
 # reshape input to be [samples, time steps, features]
 trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
 testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
 
+print(trainX[0:5])
+
+
 model = Sequential()
-model.add(Bidirectional((LSTM(50, input_shape=(trainX.shape[1], trainX.shape[2]), activation='relu', return_sequences=False,
-))))
-# model.add(LSTM(64))
-# model.add(Dropout(0.5))
-# model.add(LSTM(256))
-# model.add(Dropout(0.5))
+model.add((LSTM(256, input_shape=(trainX.shape[1], trainX.shape[2]), return_sequences=True,
+                kernel_regularizer=regularizers.l2(0.01),
+                activity_regularizer=regularizers.l1(0.01)
+)))
+model.add(LSTM(128))
+model.add(Dropout(0.5))
 model.add(Dense(1))
-# model.add(Activation('relu'))
-model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.add(Activation('linear'))
+model.compile(loss='mae', optimizer='rmsprop', metrics=['accuracy'])
 callbacks_list = utils.model_callbacks(results)
 
 utils.save_model_to_json(model, results)
 utils.logging('Model saved to file: {}/{}'.format(results, 'model.json'))
 history = model.fit(trainX, trainY,
-                    # callbacks=callbacks_list,
+                    callbacks=callbacks_list,
                     validation_split=0.20,
                     # validation_data=(testX, testY),
-                    epochs=200,
-                    batch_size=1,
+                    epochs=100,
+                    batch_size=16,
                     verbose=1,
                     shuffle=True
                     )

@@ -85,9 +85,10 @@ def model_callbacks(results):
     # ))
 
     callbacks_list.append(ReduceLROnPlateau(
-        monitor='val_loss',
-        factor=0.2,
-        patience=5,
+        monitor='loss',
+        factor=0.5,
+        cooldown=1,
+        patience=2,
         verbose=1,
         mode='auto',
         min_lr=0
