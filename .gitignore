@@ -12,3 +12,5 @@ results/04/logs/
 results/*/logs
 results/*
 wyniki
+dataset/*.bits
+dataset/*.notes
