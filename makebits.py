@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 octave_numbers = [0, 0, 12, 24, 36, 48, 60, 72, 84, 96]
-data = pickle.load(open("dataset/tpd_classical.notes", "rb"))
+data = pickle.load(open("dataset/folk_music.notes", "rb"))
 
 # data = data[0:50]
 # print(Counter(data))
@@ -34,7 +34,7 @@ keyboard.setall(0)
 for n in data:
     nb = n.split('.')
     # print(nb)
-    octave = ""
+    octave = -1
     for m in nb:
         try:
             # print(m)
@@ -43,7 +43,12 @@ for n in data:
             mantise = int("0x" + f.pitch.pitchClassString, 0)
             # print(f)
             # 0 0 0 0 0 0 0  0 0 0 0 0 0 0 0 0 0 0 0
+            #if octave == -1:
+
             keyboard[7 + mantise] = 1
+            if f.octave == 1:
+                print("Stawiam 1")
+                octave = 2
             if f.octave is None or f.octave == 0:
                 octave = 4
             else:
@@ -52,8 +57,8 @@ for n in data:
             # print(f)
             try:
                 keyboard[octave-1] = 1
-                # print(keyboard)
-                # print("{} {}".format(f, f.octave))
+                print(keyboard)
+                print("{} {}".format(f, f.octave))
                 # print(int(keyboard.to01(), 2))
             except IndexError:
                 print("ERROR: ", f)
@@ -68,7 +73,7 @@ for n in data:
         notes_digits.append(int(keyboard.to01(), 2))
         notes_binary.append(keyboard.to01())
     else:
-        print("Dziwne dane: {}".format(nb))
+        print("Dziwne dane: {} {}".format(nb, keyboard.to01()))
     # print(keyboard.to01())
     # print(int(keyboard.to01(), 2))
     # notes.append(str(int(keyboard.to01(), 2)))
@@ -76,5 +81,5 @@ for n in data:
     keyboard.setall(0)
     # print(note_number)
 # print(notes)
-pickle.dump(notes_binary, open("dataset/tpd_classical.bits", "wb"))
-pickle.dump(notes_digits, open("dataset/tpd_classical.digits", "wb"))
+pickle.dump(notes_binary, open("dataset/folk_music.bits", "wb"))
+pickle.dump(notes_digits, open("dataset/folk_music.digits", "wb"))

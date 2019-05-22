@@ -12,13 +12,19 @@ from music21 import corpus
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import LabelEncoder
 
-MIDI_PATH = "TPD/classical"
+MIDI_PATH = "/home/lukasz/Pobrane/session"
 notes = []
-
+error = 0
+parsed = 1
 for file in glob.glob(MIDI_PATH + "/*.mid"):
     print("Parsing %s" % file)
-    midi = converter.parseFile(file)
-    print("Przeparsowalem ")
+    try:
+        midi = converter.parseFile(file)
+    except IndexError:
+        error = error + 1
+        print("Blad index error numer {}".format(error))
+    print("Przeparsowalem {}".format(parsed))
+    parsed = parsed + 1
     notes_to_parse = None
     try:
         ins = instrument.partitionByInstrument(midi)
@@ -65,8 +71,8 @@ for file in glob.glob(MIDI_PATH + "/*.mid"):
 
 
 
-pickle.dump(notes, open("tpd_classical.notes", "wb"))
-data = pickle.load(open("tpd_classical.notes", "rb"))
+pickle.dump(notes, open("folk_music.notes", "wb"))
+data = pickle.load(open("folk_music.notes", "rb"))
 
 print(Counter(data))
 # s = converter.parse('ballada/ballade3.mid')

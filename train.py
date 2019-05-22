@@ -25,18 +25,18 @@ SEQ_LEN = 3
 
 results = utils.create_results_dir()
 
-data = pickle.load(open("dataset/tpd_classical.digits", "rb"))
+data = pickle.load(open("dataset/folk_music_clean.bits", "rb"))
 data = np.array(data)
 print(data.shape)
 print("Rozmiar danych: ", len(data))
 # scaler = MinMaxScaler(feature_range=(0, 1))
 # data = scaler.fit_transform(np.array(data))
-scaler = MinMaxScaler(feature_range=(-1, 1))
+scaler = MinMaxScaler(feature_range=(0, 1))
 data = scaler.fit_transform(data.astype(np.int64).reshape(-1, 1))
 from sklearn.preprocessing import StandardScaler
-scaler = StandardScaler()
-scaler.fit(data)
-data = scaler.transform(data)
+# scaler = StandardScaler()
+# scaler.fit(data)
+# data = scaler.transform(data)
 print(data[0:10])
 input_data, output_data = utils.prepare_seq(data, SEQ_LEN)
 
@@ -59,7 +59,9 @@ X = input_data
 # y = np.array(output_data).reshape((len(output_data), 1))
 y = output_data
 
-X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
+# (batch_size, time_steps, seq_len)
+# (902898, 3, 1)
+# X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
 # y = np.reshape(y, (y.shape[0], 1, y.shape[1]))
 print(X.shape)
 print(X[0])
@@ -80,17 +82,15 @@ trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
 testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
 
 model = Sequential()
-model.add(Bidirectional(LSTM(
-    128,
-    input_shape=(SEQ_LEN, 1),
-    return_sequences=False, activation='relu'
+model.add((LSTM(128, input_shape=(trainX.shape[1], trainX.shape[2]), return_sequences=True,
 )))
 # model.add(LSTM(64))
-# model.add(Dropout(0.1))
+model.add(Dropout(0.5))
+model.add(LSTM(256))
+model.add(Dropout(0.5))
 model.add(Dense(1))
 # model.add(Activation('relu'))
 model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
-
 callbacks_list = utils.model_callbacks(results)
 
 utils.save_model_to_json(model, results)
