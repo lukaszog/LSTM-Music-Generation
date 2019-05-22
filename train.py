@@ -25,7 +25,7 @@ SEQ_LEN = 3
 
 results = utils.create_results_dir()
 
-data = pickle.load(open("dataset/folk_music_clean.bits", "rb"))
+data = pickle.load(open("dataset/folk_music_clean.digits", "rb"))
 data = np.array(data)
 print(data.shape)
 print("Rozmiar danych: ", len(data))
