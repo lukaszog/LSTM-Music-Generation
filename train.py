@@ -21,13 +21,13 @@ import utils
 import matplotlib.pyplot as plt
 from keras import regularizers
 
-SEQ_LEN = 5
+SEQ_LEN = 50
 
 results = utils.create_results_dir()
 
-data = pickle.load(open("dataset/folk_music_remove_small_values.digis", "rb"))
+data = pickle.load(open("dataset/folk_music_803.digits", "rb"))
 data = np.array(data)
-# data = data[0:10000]
+# data = data[0:100000]
 import random
 # data = []
 # for i in range(0, 900000):
@@ -40,7 +40,7 @@ data = data.reshape(-1, 1)
 # scaler.fit(data)
 # data = scaler.transform(data)
 scaler = MinMaxScaler(feature_range=(0, 1))
-data = scaler.fit_transform(data.reshape(-1, 1))
+data = scaler.fit_transform(data)
 from sklearn.preprocessing import StandardScaler
 # scaler = StandardScaler()
 # scaler.fit(data)
@@ -90,12 +90,12 @@ print(trainX[0:5])
 
 
 model = Sequential()
-model.add((LSTM(128, input_shape=(trainX.shape[1], trainX.shape[2]), return_sequences=True,
+model.add((LSTM(50, input_shape=(trainX.shape[1], trainX.shape[2]), return_sequences=False,
                 # kernel_regularizer=regularizers.l2(0.01),
                 # activity_regularizer=regularizers.l1(0.01)
 )))
-model.add(LSTM(64))
-model.add(Dropout(0.5))
+# model.add(LSTM(64))
+# model.add(Dropout(0.5))
 model.add(Dense(1))
 # model.add(Activation('linear'))
 model.compile(loss='mae', optimizer='rmsprop', metrics=['accuracy'])
@@ -108,8 +108,8 @@ history = model.fit(trainX, trainY,
                     validation_split=0.20,
                     # validation_data=(testX, testY),
                     epochs=100,
-                    batch_size=16,
-                    verbose=1,
+                    batch_size=128,
+                    verbose=2,
                     shuffle=True
                     )
 # x_input = np.array([70, 80, 90])

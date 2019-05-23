@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 octave_numbers = [0, 0, 12, 24, 36, 48, 60, 72, 84, 96]
-data = pickle.load(open("dataset/folk_music.notes", "rb"))
+data = pickle.load(open("folk_music_803.notes", "rb"))
 
 # data = data[0:50]
 # print(Counter(data))
@@ -81,5 +81,5 @@ for n in data:
     keyboard.setall(0)
     # print(note_number)
 # print(notes)
-pickle.dump(notes_binary, open("dataset/folk_music.bits", "wb"))
-pickle.dump(notes_digits, open("dataset/folk_music.digits", "wb"))
+pickle.dump(notes_binary, open("dataset/folk_music_803.bits", "wb"))
+pickle.dump(notes_digits, open("dataset/folk_music_803.digits", "wb"))

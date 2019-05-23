@@ -1,4 +1,4 @@
-from music21 import converter, instrument, note, chord, common
+from music21 import converter, instrument, note, chord, common, pitch, interval
 import numpy as np
 from bitarray import bitarray
 # import re
@@ -12,14 +12,18 @@ from music21 import corpus
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import LabelEncoder
 
-MIDI_PATH = "/home/lukasz/Pobrane/session"
+MIDI_PATH = "/mnt/g/LSTM-New-Look/folk-rnn/data/session"
 notes = []
 error = 0
 parsed = 1
 for file in glob.glob(MIDI_PATH + "/*.mid"):
     print("Parsing %s" % file)
+
     try:
         midi = converter.parseFile(file)
+        k = midi.analyze('key')
+        i = interval.Interval(k.tonic, pitch.Pitch('C'))
+        midi = midi.transpose(i)
     except IndexError:
         error = error + 1
         print("Blad index error numer {}".format(error))
@@ -71,12 +75,14 @@ for file in glob.glob(MIDI_PATH + "/*.mid"):
 
 
 
-pickle.dump(notes, open("folk_music.notes", "wb"))
-data = pickle.load(open("folk_music.notes", "rb"))
+pickle.dump(notes, open("folk_music_803.notes", "wb"))
+data = pickle.load(open("folk_music_803.notes", "rb"))
 
 print(Counter(data))
 # s = converter.parse('ballada/ballade3.mid')
 # s.plot('histogram', 'pitch')
+print("Przeprasowanych: {}".format(parsed))
+print("Bledow: {}".format(error))
 
 exit()
 
