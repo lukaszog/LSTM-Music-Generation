@@ -21,13 +21,13 @@ import utils
 import matplotlib.pyplot as plt
 from keras import regularizers
 
-SEQ_LEN = 100
+SEQ_LEN = 5
 
 results = utils.create_results_dir()
 
 data = pickle.load(open("dataset/folk_music_remove_small_values.digis", "rb"))
 data = np.array(data)
-data = data[0:10000]
+# data = data[0:10000]
 import random
 # data = []
 # for i in range(0, 900000):
@@ -90,14 +90,14 @@ print(trainX[0:5])
 
 
 model = Sequential()
-model.add((LSTM(256, input_shape=(trainX.shape[1], trainX.shape[2]), return_sequences=True,
-                kernel_regularizer=regularizers.l2(0.01),
-                activity_regularizer=regularizers.l1(0.01)
+model.add((LSTM(128, input_shape=(trainX.shape[1], trainX.shape[2]), return_sequences=True,
+                # kernel_regularizer=regularizers.l2(0.01),
+                # activity_regularizer=regularizers.l1(0.01)
 )))
-model.add(LSTM(128))
+model.add(LSTM(64))
 model.add(Dropout(0.5))
 model.add(Dense(1))
-model.add(Activation('linear'))
+# model.add(Activation('linear'))
 model.compile(loss='mae', optimizer='rmsprop', metrics=['accuracy'])
 callbacks_list = utils.model_callbacks(results)
 
