@@ -12,7 +12,7 @@ from music21 import corpus
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import LabelEncoder
 
-MIDI_PATH = "/mnt/g/LSTM-New-Look/folk-rnn/data/session"
+MIDI_PATH = "midi_datasets"
 notes = []
 error = 0
 parsed = 1
@@ -75,8 +75,8 @@ for file in glob.glob(MIDI_PATH + "/*.mid"):
 
 
 
-pickle.dump(notes, open("folk_music_803.notes", "wb"))
-data = pickle.load(open("folk_music_803.notes", "rb"))
+pickle.dump(notes, open("dataset/folk_music_803_tune0.notes", "wb"))
+data = pickle.load(open("dataset/folk_music_803_tune0.notes", "rb"))
 
 print(Counter(data))
 # s = converter.parse('ballada/ballade3.mid')

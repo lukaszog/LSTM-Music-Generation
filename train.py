@@ -45,7 +45,7 @@ from sklearn.preprocessing import StandardScaler
 # scaler = StandardScaler()
 # scaler.fit(data)
 # data = scaler.transform(data)
-input_data, output_data = utils.split_sequence(data, SEQ_LEN)
+input_data, output_data = utils.create_dataset(data, SEQ_LEN)
 
 # print(input_data[0:1][0][0])
 
@@ -80,8 +80,8 @@ train_size = int(len(data) * 0.67)
 test_size = len(data) - train_size
 train, test = data[0:train_size,:], data[train_size:len(data),:]
 # reshape into X=t and Y=t+1
-trainX, trainY = utils.prepare_seq(data, SEQ_LEN)
-testX, testY = utils.prepare_seq(data, SEQ_LEN)
+trainX, trainY = utils.create_dataset(data, SEQ_LEN)
+testX, testY = utils.create_dataset(data, SEQ_LEN)
 # reshape input to be [samples, time steps, features]
 trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
 testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
@@ -90,11 +90,11 @@ print(trainX[0:5])
 
 
 model = Sequential()
-model.add((LSTM(50, input_shape=(trainX.shape[1], trainX.shape[2]), return_sequences=False,
-                # kernel_regularizer=regularizers.l2(0.01),
+model.add((LSTM(4, input_shape=(trainX.shape[1], trainX.shape[2]), return_sequences=False,
+                 kernel_regularizer=regularizers.l2(0.01),
                 # activity_regularizer=regularizers.l1(0.01)
 )))
-# model.add(LSTM(64))
+# model.add(LSTM(4))
 # model.add(Dropout(0.5))
 model.add(Dense(1))
 # model.add(Activation('linear'))
@@ -108,8 +108,8 @@ history = model.fit(trainX, trainY,
                     validation_split=0.20,
                     # validation_data=(testX, testY),
                     epochs=100,
-                    batch_size=128,
-                    verbose=2,
+                    batch_size=1,
+                    verbose=1,
                     shuffle=True
                     )
 # x_input = np.array([70, 80, 90])
