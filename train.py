@@ -25,7 +25,7 @@ SEQ_LEN = 50
 
 results = utils.create_results_dir()
 
-data = pickle.load(open("dataset/folk_music_803.digits", "rb"))
+data = pickle.load(open("dataset/folk_music_803_tune15_order.digits", "rb"))
 data = np.array(data)
 # data = data[0:100000]
 import random

@@ -11,7 +11,7 @@ SEQ_LEN = 50
 
 
 def generate():
-    model = create_network('results/213')
+    model = create_network('results/218')
     prediction_output = generate_notes(model)
 
 
@@ -32,9 +32,10 @@ def create_network(result_dir):
 
 
 def generate_notes(model):
-    data = pickle.load(open("dataset/folk_music_803_tune0_clean.digits", "rb"))
+    data = pickle.load(open("dataset/folk_music_803_tune15_order.digits", "rb"))
     # data = data[0:200]
     # print(data)
+    data = np.array(data)
     scaler = MinMaxScaler(feature_range=(0, 1))
     data = data.reshape(-1, 1)
     data = scaler.fit_transform(np.array(data))
@@ -66,16 +67,18 @@ def generate_notes(model):
     # TODO: napisac dekoder
     offset = 0
     output_notes = []
-    for i in range(0, 100):
+    for i in range(0, 30):
         print([int(d) for d in str(bin(np.array(trainPredict, dtype=int)[i][0]))[2:]])
         print(bin(np.array(trainPredict, dtype=int)[i][0]))
         note = convert_binary_note([int(d) for d in str(bin(np.array(trainPredict, dtype=int)[i][0]))[2:]])
-        note.offset = offset
-        offset += 0.5
-        output_notes.append(note)
+
+        if note != -1:
+            note.offset = offset
+            offset += 0.5
+            output_notes.append(note)
 
     midi_stream = stream.Stream(output_notes)
-    midi_stream.write('midi', fp='test_output.mid')
+    midi_stream.write('midi', fp='test_output2.mid')
 
     # plt.show()
     # print(trainY)
@@ -84,17 +87,27 @@ def convert_binary_note(data, order=0):
     # order = 0 octave first then notes
     # order = 1 fist notes then octave
     # 0 0 0 0 0 0 0  0 0 0 0 0 0 0 0 0 0 0 0
-    octave = data[0:6]
-    notes = data[6:]
+    # octave = data[0:6]
+    r = 19 - len(data)
+    zeros = r * [0]
+    data[0:0] = zeros
+    print(data)
+    print(len(data))
+    octave = data[13:]
+    # notes = data[6:]
+    notes = data[0:12]
 
     octave = [i for i, e in enumerate(octave) if e == 1]
     notes = [i for i, e in enumerate(notes) if e == 1]
     if len(notes) > 1:
         n = chord.Chord([x-1 for x in notes])
-    else:
+
+    try:
         n = note.Note(notes[0] - 1)
-    n = note.Note(notes[0] - 1)
-    n.octave = octave[0] + 1
+        n.octave = octave[0] + 1
+    except IndexError:
+        n = -1
+        pass
     print("Oktawa: ", octave)
     print("Nuty: ", notes)
     print("Nuta: ", n)
