@@ -9,7 +9,7 @@ import os
 import time
 import functools
 
-path_to_file = 'chopin/chopin.abc'
+path_to_file = tf.keras.utils.get_file('irish.abc', 'https://raw.githubusercontent.com/aamini/introtodeeplearning_labs/2019/lab1/data/irish.abc')
 
 text = open(path_to_file).read()
 
@@ -118,10 +118,17 @@ checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt_{epoch}")
 import util_abc
 
 
+# summary_writer = tf.contrib.summary.create_file_writer('loss', flush_millis=10000)
+# summary_writer.set_as_default()
+# global_step = tf.train.get_or_create_global_step()
+# def log_loss(loss):
+#     with tf.contrib.summary.always_record_summaries:
+#         tf.contrib.summary.scalar('loss', loss)
+
 history = []
 plotter = util_abc.PeriodicPlotter(sec=1, xlabel='Iterations', ylabel='Loss')
 
-for epoch in range(5):
+for epoch in range(10):
     hidden = model.reset_states()
     custom_msg = util_abc.custom_progress_text("Loss: %(loss)2.2f")
     bar = util_abc.create_progress_bar(custom_msg)
@@ -132,6 +139,8 @@ for epoch in range(5):
             predictions = model(inp)  # TODO
             '''TODO: compute the loss!'''
             loss = compute_loss(target, predictions)  # TODO
+            # global_step.assign_add(1)
+            # log_loss(loss)
 
         # Now, compute the gradients and try to minimize
         '''TODO: complete the function call for gradient computation'''

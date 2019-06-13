@@ -134,6 +134,6 @@ class PeriodicPlotter:
       plt.xlabel(self.xlabel); plt.ylabel(self.ylabel)
       # ipythondisplay.clear_output(wait=True)
       # ipythondisplay.display(plt.gcf())
-      plt.savefig("")
+      plt.savefig("error.jpg")
 
       self.tic = time.time()
