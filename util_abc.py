@@ -132,7 +132,8 @@ class PeriodicPlotter:
         raise ValueError("unrecognized parameter scale {}".format(self.scale))
 
       plt.xlabel(self.xlabel); plt.ylabel(self.ylabel)
-      ipythondisplay.clear_output(wait=True)
-      ipythondisplay.display(plt.gcf())
+      # ipythondisplay.clear_output(wait=True)
+      # ipythondisplay.display(plt.gcf())
+      plt.savefig("")
 
       self.tic = time.time()
