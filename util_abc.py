@@ -37,6 +37,8 @@ def play_generated_song(generated_text):
             return play_wav(basename+'.wav')
     print("None of the songs were valid, try training longer to improve syntax.")
 
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
@@ -135,5 +137,5 @@ class PeriodicPlotter:
       # ipythondisplay.clear_output(wait=True)
       # ipythondisplay.display(plt.gcf())
       plt.savefig("error.jpg")
-
+      print("Zapisuje......")
       self.tic = time.time()
